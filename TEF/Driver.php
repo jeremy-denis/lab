@@ -1,4 +1,11 @@
 <?php
+/*************************************
+ * Title 			: 	Driver.php
+ * Creation_date 	:	1/10/2013 
+ * Author 			: 	Jeremy DENIS
+ * Licence 			: 	apache2
+ * Description 		: 	base for a non sql API
+ *************************************/
 
 namespace Database;
 use PDO;
