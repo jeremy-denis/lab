@@ -1,0 +1,93 @@
+<?php
+
+use Database\Finder;
+use Model\Entity;
+
+namespace Database;
+
+class EntityDao
+{
+	private $driver;
+	
+	public function __construct($driver)
+	{
+		$this->driver = $driver;
+	}
+	
+	public function save($entity)
+	{
+		$id = -1;
+		if ($entity->get($entity->getIdColumn()) != null)
+		{
+			$id = $entity->get($entity->getIdColumn());
+		}
+		else
+		{
+			$id = count($this->driver->findall(Entity::toTableName($entity->getName())))+1;
+		}
+		$array = $entity->getAllDataArray();
+		foreach ($array as $key => $data)
+		{
+			if (is_string($data))
+			{
+				$array[$key] = '\''.$data.'\'';
+			}
+			else
+				$array[$key] = $data;
+		}/*array('id' => $id,
+						'type' => "'".$media->getType()."'",
+						'src' => "'".$media->getSrc()."'",
+						'titre' => "'".$media->getTitre()."'",
+				);*/
+		$this->driver->save($array,::Entity::toTableName($entity->getName()),$id,$entity->getIdColumn()); 
+	}	
+	
+	public function delete()
+	{
+	}
+	
+	public static function getLine($dataLine,$table,$column,$printId)
+	{
+		$array = '<tr>';
+		foreach ($dataLine as $key => $value)
+		{
+			if ($key != $column || $printId)
+				$array .= "<td>$value</td>";
+		}
+		$array .= '<td>';
+		$array .= '<input type="button" value="Supprimer" onclick="new OrderTab().deleteEntity('.$dataLine[$column].',\''.$column.'\',\''.$table.'\');"/>';
+		$array .= '</td>';
+		$array .= '</tr>';
+		return $array;
+	}
+	
+	public static function getHeader($data,$printId)
+	{
+		$array = '<tr>';
+		foreach ($data as $key => $value)
+		{
+			if ($key != 'id' || $printId)
+				$array .= "<th>$key</th>";
+		}
+		$array .= '</tr>';
+		return $array;
+	}
+	
+	public static function getTab(Finder $finder, $printId = 0)
+	{
+		$array = '<table>';
+		$datas = $finder->findAll();
+		foreach ($datas as $data)
+		{
+			$array .= ComonDao::getHeader($data->getDataArray(),$printId);
+			break;
+		}
+		foreach ($datas as $data)
+		{
+			$array .= ComonDao::getLine($data->getDataArray(),$finder->getEntityTable(),$finder->getColumnId(),$printId);
+		}
+		$array .= '</table>';
+		$array .= '</table>';
+		return $array;
+	}
+}

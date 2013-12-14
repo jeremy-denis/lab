@@ -1,0 +1,11 @@
+
+function init()
+{
+	var message = document.getElementById('message');
+	if (message != null)
+	{
+		message.innerHTML = '<div>rr : '+'<?php echo "gt";?>'+'</div>';
+	}
+}
+
+window.addEventListener('load',init,false);
